@@ -15,7 +15,6 @@ static double function(double x)
     return 1.0 / (1.0 + x * x);
 }
 
-// Exact integral (arctangent of b minus arctangent of a)
 static double exactIntegral(double a, double b)
 {
     return std::atan(b) - std::atan(a);
