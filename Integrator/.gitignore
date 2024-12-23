@@ -1,0 +1,45 @@
+# Ignore Visual Studio specific files
+.vs/
+.vs2019/
+.vs2017/
+.vscode/
+.idea/
+
+# Ignore build output folders
+Debug/
+Release/
+x64/
+x86/
+DebugApp/
+ReleaseApp/
+
+# Ignore user-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+# Ignore dependency directories
+packages/
+
+# Ignore .txt and .csv files
+*.txt
+*.csv
+
+# Ignore compiled object files and libraries
+*.obj
+*.pch
+*.pdb
+*.idb
+*.lib
+*.dll
+
+# Ignore temporary files created by Visual Studio
+*.log
+*.bak
+*.swp
+
+# Ignore generated files from Visual Studio build system
+*.ncb
+*.sdf
+*.db
