@@ -5,8 +5,6 @@
 #include <iomanip>
 #include <cmath>
 #include <string>
-#include <cstdlib>
-#include <vector>
 #include <fstream>
 
 static double function(double x) {
