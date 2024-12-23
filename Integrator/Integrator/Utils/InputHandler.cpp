@@ -2,14 +2,14 @@
 #include <regex>
 #include <sstream>
 
-std::string InputHandler::trimWhitespace(const std::string& str)
+std::string InputHandler::trimWhitespace(const std::string &str)
 {
     size_t start = str.find_first_not_of(" \t");
     size_t end = str.find_last_not_of(" \t");
     return (start == std::string::npos) ? "" : str.substr(start, end - start + 1);
 }
 
-double InputHandler::parsePiInput(const std::string& input)
+double InputHandler::parsePiInput(const std::string &input)
 {
     std::string trimmedInput = trimWhitespace(input);
     if (trimmedInput.empty())
@@ -48,12 +48,12 @@ double InputHandler::parsePiInput(const std::string& input)
     }
 
     if (trimmedInput.find('*') != std::string::npos || trimmedInput.find('/') != std::string::npos)
-        return NAN;  
+        return NAN;
 
     std::istringstream stream(trimmedInput);
     double value;
     if (stream >> value)
         return isNegative ? -value : value;
 
-    return NAN; 
+    return NAN;
 }

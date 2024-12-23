@@ -1,6 +1,7 @@
 #include "ApplicationHandler.h"
 
-int main() {
+int main()
+{
     ApplicationHandler App;
     App.run();
     return 0;

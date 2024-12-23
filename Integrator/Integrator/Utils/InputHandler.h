@@ -11,9 +11,9 @@
 class InputHandler
 {
 public:
-    static std::string trimWhitespace(const std::string& str);
+    static std::string trimWhitespace(const std::string &str);
 
-    static double parsePiInput(const std::string& input);
+    static double parsePiInput(const std::string &input);
 };
 
 #endif // InputHandler_H
