@@ -1,7 +1,5 @@
-#ifndef SIMPSON_H
-#define SIMPSON_H
-
-#include <vector>
+#ifndef Simpson_H
+#define Simpson_H
 
 class Simpson
 {
@@ -38,6 +36,13 @@ public:
      * @returns {number} The approximate definite integral of the function f from a to b
      */
     double integrate(double (*f)(double), double a, double b, double epsilon = 1e-6);
+
+    // Function to get the number of subintervals
+    int getSubintervalCount() const;
+
+private:
+    // Variable to keep track of the number of subintervals created
+    mutable int subintervalCount = 0;
 };
 
 #endif // SIMPSON_H
