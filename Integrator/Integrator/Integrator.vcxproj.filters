@@ -27,6 +27,9 @@
     <ClCompile Include="ApplicationHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Integrator\Trapezoidal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Integrator\Simpson.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ApplicationHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Integrator\Trapezoidal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

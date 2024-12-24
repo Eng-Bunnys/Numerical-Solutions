@@ -1,11 +1,13 @@
 #include "ApplicationHandler.h"
 #include "Integrator/Simpson.h"
+#include "Integrator/Trapezoidal.h"
 #include "Utils/InputHandler.h"
 #include <iostream>
 #include <iomanip>
 #include <cmath>
 #include <string>
 #include <fstream>
+#include <conio.h>
 
 static double function(double x)
 {
@@ -23,34 +25,46 @@ void ApplicationHandler::run()
 {
     printWelcomeMessage();
     handleSingleCalculation();
-    std::cout << "\nThank you for using the integrator. Goodbye!\n";
+    std::cout << "\nThank you for using the integrator!\nPress any button to exit...\n";
+
+    _getch();
 }
 
 void ApplicationHandler::printWelcomeMessage()
 {
     std::cout << "=====================================================\n";
-    std::cout << "Welcome! Compute definite integrals with custom bounds and accuracy.\n";
+    std::cout << "Welcome! Compare Simpson's and Trapezoidal integration methods.\n";
     std::cout << "=====================================================\n\n";
 }
 
-void ApplicationHandler::plot(const std::string &title, const std::string &function_name)
+void ApplicationHandler::plot(const std::string &title, const std::string &function_name,
+                              const std::string &filename_suffix)
 {
-    std::ofstream configFile("plot_config.txt");
+    std::string configFilename = "plot_config_" + filename_suffix + ".txt";
+
+    std::ofstream configFile(configFilename);
     if (configFile.is_open())
     {
         configFile << title << "\n";
         configFile << function_name << "\n";
         configFile.close();
-        system("python plot_graph.py");
+
+        std::string command = "python plot_graph.py \"" + configFilename + "\"";
+
+        int result = system(command.c_str());
+
+        if (result != 0)
+            std::cerr << "Error executing Python script. Make sure Python and required libraries are installed.\n";
     }
     else
-        std::cerr << "Error opening config file.\n";
+        std::cerr << "Error opening config file: " << configFilename << "\n";
 }
 
 void ApplicationHandler::handleSingleCalculation()
 {
     InputHandler inputHandler;
     Simpson simpsonIntegrator;
+    Trapezoidal trapezoidalIntegrator;
 
     double a, b, epsilon;
     std::string input;
@@ -78,37 +92,11 @@ void ApplicationHandler::handleSingleCalculation()
             std::cout << "Invalid input. Please enter a valid number or 'pi' for Pi: ";
     }
 
-    std::cout << "\nAnalyzing efficiency at different error tolerances...\n";
-    std::cout << "-------------------------------------------------------\n";
-    std::cout << std::setw(15) << "Tolerance" << std::setw(20) << "Subintervals Used"
-              << std::setw(15) << "Integral" << std::setw(15) << "Error (%)" << "\n";
-    std::cout << "-------------------------------------------------------\n";
-
+    std::cout << "\nComparing methods at different error tolerances...\n";
     double tolerances[] = {1e-6, 1e-5, 1e-4, 1e-3, 1e-2};
+    int numTolerances = sizeof(tolerances) / sizeof(tolerances[0]);
 
-    std::ofstream dataFile("plot_data.txt");
-    if (dataFile.is_open())
-    {
-        for (double tolerance : tolerances)
-        {
-            double result = simpsonIntegrator.integrate(function, a, b, tolerance);
-            int subintervalCount = simpsonIntegrator.getSubintervalCount();
-            double exact = exactIntegral(a, b);
-            double errorPercentage = (std::abs(exact - result) / std::abs(exact)) * 100;
-
-            dataFile << tolerance << " " << subintervalCount << " " << result << " " << errorPercentage << "\n";
-
-            std::cout << std::setw(15) << tolerance
-                      << std::setw(20) << subintervalCount
-                      << std::setw(15) << result
-                      << std::setw(15) << errorPercentage << "%\n";
-        }
-        dataFile.close();
-    }
-    else
-        std::cerr << "Error opening data file.\n";
-
-    std::cout << "-------------------------------------------------------\n";
+    printComparisonTable(a, b, tolerances, numTolerances);
 
     std::cout << "\nEnter the desired accuracy (Press enter for default: 1e-6): ";
     std::string epsilonInput;
@@ -116,23 +104,114 @@ void ApplicationHandler::handleSingleCalculation()
     std::getline(std::cin, epsilonInput);
     epsilon = epsilonInput.empty() ? 1e-6 : std::stod(epsilonInput);
 
-    double result = simpsonIntegrator.integrate(function, a, b, epsilon);
-    int subintervalCount = simpsonIntegrator.getSubintervalCount();
+    double simpsonResult = simpsonIntegrator.integrate(function, a, b, epsilon);
+    double trapResult = trapezoidalIntegrator.integrate(function, a, b, epsilon);
 
-    std::cout << "\n-------------------------------------------------------\n";
-    std::cout << "Results for user-defined accuracy (" << epsilon << "):\n";
-    std::cout << "-------------------------------------------------------\n";
-    printResults(result, exactIntegral(a, b),
-                 (std::abs(exactIntegral(a, b) - result) / std::abs(exactIntegral(a, b))) * 100,
-                 a, b, epsilon, subintervalCount);
+    double exactValue = exactIntegral(a, b);
 
-    std::string title = "Plot of Error vs Tolerance for Adaptive Simpson's Integration";
-    std::string function_name = "f(x) = 1/(1+x^2)";
-    plot(title, function_name);
+    std::cout << "\n=============== Final Results ===============\n\n";
+
+    printResults("Simpson's Method", simpsonResult, exactValue,
+                 (std::abs(exactValue - simpsonResult) / std::abs(exactValue)) * 100,
+                 a, b, epsilon, simpsonIntegrator.getSubintervalCount());
+
+    printResults("Trapezoidal Method", trapResult, exactValue,
+                 (std::abs(exactValue - trapResult) / std::abs(exactValue)) * 100,
+                 a, b, epsilon, trapezoidalIntegrator.getSubintervalCount());
+
+    displayGraphs();
 }
 
-void ApplicationHandler::printResults(double result, double exactValue, double errorPercentage, double a, double b, double epsilon, int subintervalCount)
+void ApplicationHandler::printComparisonTable(double a, double b,
+                                              const double *tolerances,
+                                              int numTolerances)
 {
+    Simpson simpsonIntegrator;
+    Trapezoidal trapezoidalIntegrator;
+
+    double simpsonResults[5], trapResults[5];
+    double simpsonErrors[5], trapErrors[5];
+    int simpsonSubintervals[5], trapSubintervals[5];
+
+    std::cout << "\nSimpson's Method Results:\n";
+    std::cout << "-------------------------------------------------------\n";
+    std::cout << std::setw(15) << "Tolerance" << std::setw(20) << "Subintervals Used"
+              << std::setw(15) << "Integral" << std::setw(15) << "Error (%)" << "\n";
+    std::cout << "-------------------------------------------------------\n";
+
+    for (int i = 0; i < numTolerances; i++)
+    {
+        double result = simpsonIntegrator.integrate(function, a, b, tolerances[i]);
+        int subintervalCount = simpsonIntegrator.getSubintervalCount();
+        double exact = exactIntegral(a, b);
+        double errorPercentage = (std::abs(exact - result) / std::abs(exact)) * 100;
+
+        simpsonResults[i] = result;
+        simpsonErrors[i] = errorPercentage;
+        simpsonSubintervals[i] = subintervalCount;
+
+        std::cout << std::setw(15) << tolerances[i]
+                  << std::setw(20) << subintervalCount
+                  << std::setw(15) << result
+                  << std::setw(15) << errorPercentage << "%\n";
+    }
+
+    std::cout << "\nTrapezoidal Method Results:\n";
+    std::cout << "-------------------------------------------------------\n";
+    std::cout << std::setw(15) << "Tolerance" << std::setw(20) << "Subintervals Used"
+              << std::setw(15) << "Integral" << std::setw(15) << "Error (%)" << "\n";
+    std::cout << "-------------------------------------------------------\n";
+
+    for (int i = 0; i < numTolerances; i++)
+    {
+        double result = trapezoidalIntegrator.integrate(function, a, b, tolerances[i]);
+        int subintervalCount = trapezoidalIntegrator.getSubintervalCount();
+        double exact = exactIntegral(a, b);
+        double errorPercentage = (std::abs(exact - result) / std::abs(exact)) * 100;
+
+        trapResults[i] = result;
+        trapErrors[i] = errorPercentage;
+        trapSubintervals[i] = subintervalCount;
+
+        std::cout << std::setw(15) << tolerances[i]
+                  << std::setw(20) << subintervalCount
+                  << std::setw(15) << result
+                  << std::setw(15) << errorPercentage << "%\n";
+    }
+
+    generateDataFile("plot_data_simpson.txt", tolerances, simpsonResults,
+                     simpsonErrors, simpsonSubintervals, numTolerances);
+    generateDataFile("plot_data_trap.txt", tolerances, trapResults,
+                     trapErrors, trapSubintervals, numTolerances);
+}
+
+void ApplicationHandler::generateDataFile(const std::string &filename,
+                                          const double *tolerances, const double *results,
+                                          const double *errors, const int *subintervals,
+                                          int numTolerances)
+{
+    std::ofstream dataFile(filename);
+    if (dataFile.is_open())
+    {
+        for (int i = 0; i < numTolerances; i++)
+        {
+            dataFile << tolerances[i] << " " << subintervals[i] << " "
+                     << results[i] << " " << errors[i] << "\n";
+        }
+        dataFile.close();
+    }
+    else
+    {
+        std::cerr << "Error opening " << filename << "\n";
+    }
+}
+
+void ApplicationHandler::printResults(const std::string &method, double result,
+                                      double exactValue, double errorPercentage,
+                                      double a, double b, double epsilon,
+                                      int subintervalCount)
+{
+    std::cout << "Results for " << method << ":\n";
     std::cout << "=====================================================\n";
     std::cout << std::setw(20) << std::left << "Parameter"
               << std::setw(20) << std::left << "Value"
@@ -145,11 +224,17 @@ void ApplicationHandler::printResults(double result, double exactValue, double e
     std::cout << "=====================================================\n";
 
     std::cout << std::fixed << std::setprecision(15);
-    std::cout << "\n====================================\n";
-    std::cout << std::setw(40) << "Result of the Adaptive Simpson's Integral:\n";
-    std::cout << "====================================\n";
     std::cout << std::setw(20) << "Integral" << std::setw(10) << result << "\n";
     std::cout << std::setw(20) << "Exact Value" << std::setw(10) << exactValue << "\n";
     std::cout << std::setw(20) << "Error (%)" << std::setw(10) << errorPercentage << "%" << "\n";
-    std::cout << "====================================\n";
+    std::cout << "=====================================================\n\n";
 }
+
+void ApplicationHandler::displayGraphs()
+{
+    plot("Error vs Tolerance for Adaptive Simpson's Integration",
+         "f(x) = 1/(1+x^2)", "simpson");
+
+    plot("Error vs Tolerance for Adaptive Trapezoidal Integration",
+         "f(x) = 1/(1+x^2)", "trap");
+};

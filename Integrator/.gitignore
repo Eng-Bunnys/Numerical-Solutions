@@ -22,9 +22,11 @@ ReleaseApp/
 # Ignore dependency directories
 packages/
 
-# Ignore .txt and .csv files
 *.txt
 *.csv
+.png
+.jpeg
+.jpg
 
 # Ignore compiled object files and libraries
 *.obj

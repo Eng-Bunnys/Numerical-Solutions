@@ -128,12 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationHandler.cpp" />
+    <ClCompile Include="Integrator\Trapezoidal.cpp" />
     <ClCompile Include="Utils\InputHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Integrator\Simpson.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationHandler.h" />
+    <ClInclude Include="Integrator\Trapezoidal.h" />
     <ClInclude Include="Utils\InputHandler.h" />
     <ClInclude Include="Integrator\Simpson.h" />
   </ItemGroup>
