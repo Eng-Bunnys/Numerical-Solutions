@@ -27,7 +27,7 @@ void ApplicationHandler::run()
     handleSingleCalculation();
     std::cout << "\nThank you for using the integrator!\nPress any button to exit...\n";
 
-    _getch();
+    (void)_getch();
 }
 
 void ApplicationHandler::printWelcomeMessage()
