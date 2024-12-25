@@ -8,6 +8,8 @@ class ApplicationHandler
 public:
     ApplicationHandler();
     void run();
+    double simpsonError;
+    double trapezoidalError;
 
 private:
     void printWelcomeMessage();

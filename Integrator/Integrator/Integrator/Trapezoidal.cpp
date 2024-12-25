@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 Trapezoidal::Interval::Interval(double a_, double b_, double whole_, double epsilon_)
     : a(a_), b(b_), whole(whole_), epsilon(epsilon_)
@@ -27,6 +28,13 @@ double Trapezoidal::integrate(double (*f)(double), double a, double b, double ep
     intervalStack.push_back({a, b, initialWhole, epsilon});
     subintervalCount = 1;
 
+    std::ofstream intervalFile("intervals_log.txt");
+    if (!intervalFile)
+        throw std::runtime_error("Unable to open file for logging intervals");
+
+    intervalFile << "Intervals processed during integration:\n";
+    intervalFile << "a\tb\twhole\tepsilon\n";
+
     while (!intervalStack.empty())
     {
         if (intervalStack.size() > 10000)
@@ -34,6 +42,8 @@ double Trapezoidal::integrate(double (*f)(double), double a, double b, double ep
 
         Interval current = intervalStack.back();
         intervalStack.pop_back();
+
+        intervalFile << current.a << "\t" << current.b << "\t" << current.whole << "\t" << current.epsilon << "\n";
 
         double midPoint = (current.a + current.b) / 2.0;
         double leftHalf = trapezoidalRule(f, current.a, midPoint);
@@ -51,6 +61,8 @@ double Trapezoidal::integrate(double (*f)(double), double a, double b, double ep
             subintervalCount += 2;
         }
     }
+
+    intervalFile.close();
     return result;
 }
 

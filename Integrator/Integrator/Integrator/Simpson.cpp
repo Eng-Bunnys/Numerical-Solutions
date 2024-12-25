@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 Simpson::Interval::Interval(double a_, double b_, double whole_, double epsilon_)
     : a(a_), b(b_), whole(whole_), epsilon(epsilon_)
@@ -32,10 +33,19 @@ double Simpson::integrate(double (*f)(double), double a, double b, double epsilo
 
     subintervalCount = 1;
 
+    std::ofstream intervalFile("simpson_intervals_log.txt");
+    if (!intervalFile)
+        throw std::runtime_error("Unable to open file for logging intervals");
+
+    intervalFile << "Intervals processed during Simpson's rule integration:\n";
+    intervalFile << "a\tb\twhole\tepsilon\n";
+
     while (!intervalStack.empty())
     {
         Interval current = intervalStack.back();
         intervalStack.pop_back();
+
+        intervalFile << current.a << "\t" << current.b << "\t" << current.whole << "\t" << current.epsilon << "\n";
 
         double midPoint = (current.a + current.b) / 2.0;
         double leftHalf = simpsonRule(f, current.a, midPoint);
@@ -68,6 +78,7 @@ double Simpson::integrate(double (*f)(double), double a, double b, double epsilo
         }
     }
 
+    intervalFile.close();
     return result;
 }
 

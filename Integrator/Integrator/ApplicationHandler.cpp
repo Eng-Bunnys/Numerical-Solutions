@@ -19,7 +19,11 @@ static double exactIntegral(double a, double b)
     return std::atan(b) - std::atan(a);
 }
 
-ApplicationHandler::ApplicationHandler() {}
+ApplicationHandler::ApplicationHandler() 
+{
+    this->simpsonError = 0;
+    this->trapezoidalError = 0;
+}
 
 void ApplicationHandler::run()
 {
@@ -109,14 +113,20 @@ void ApplicationHandler::handleSingleCalculation()
 
     double exactValue = exactIntegral(a, b);
 
+    this->simpsonError = 
+        (std::abs(exactValue - simpsonResult) / std::abs(exactValue)) * 100;
+
+    this->trapezoidalError = 
+        (std::abs(exactValue - trapResult) / std::abs(exactValue)) * 100;
+
     std::cout << "\n=============== Final Results ===============\n\n";
 
     printResults("Simpson's Method", simpsonResult, exactValue,
-                 (std::abs(exactValue - simpsonResult) / std::abs(exactValue)) * 100,
+               this->simpsonError,
                  a, b, epsilon, simpsonIntegrator.getSubintervalCount());
 
     printResults("Trapezoidal Method", trapResult, exactValue,
-                 (std::abs(exactValue - trapResult) / std::abs(exactValue)) * 100,
+                this->trapezoidalError,
                  a, b, epsilon, trapezoidalIntegrator.getSubintervalCount());
 
     displayGraphs();
