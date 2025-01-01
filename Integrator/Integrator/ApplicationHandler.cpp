@@ -11,7 +11,7 @@
 
 static double function(double x)
 {
-    return 1.0 / (1.0 + x * x);
+    return 1.0 / (1 + x * x);
 }
 
 static double exactIntegral(double a, double b)
