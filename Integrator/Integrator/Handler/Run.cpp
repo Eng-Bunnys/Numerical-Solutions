@@ -14,6 +14,7 @@ void ApplicationHandler::printSettings()
     std::cout << "Delete Text Files: " << (deleteTextFiles ? "Yes" : "No") << "\n";
     std::cout << "Delete Graph Images: " << (deleteGraphs ? "Yes" : "No") << "\n";
     std::cout << "Print Graphs: " << (showGraph ? "Yes" : "No") << "\n";
+    std::cout << "Show Exact Result: " << (showExact ? "Yes" : "No") << "\n";  // Add this line
     std::cout << "====================================================\n\n";
 }
 
@@ -47,17 +48,15 @@ void ApplicationHandler::askSettings()
     menu.setHighlightColors(
         FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY,
         BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-
-    menu.setOptions({"Yes", "No"});
-
+    menu.setOptions({ "Yes", "No" });
     menu.setQuestionText("Would you like to delete text files after completion?");
     deleteTextFiles = (menu.getChoice() == 0);
-
     menu.setQuestionText("Would you like to delete graph images after completion?");
     deleteGraphs = (menu.getChoice() == 0);
-
     menu.setQuestionText("Would you like to print graphs?");
     showGraph = (menu.getChoice() == 0);
+    menu.setQuestionText("Would you like to show exact results?"); 
+    showExact = (menu.getChoice() == 0);
 }
 
 void ApplicationHandler::run()

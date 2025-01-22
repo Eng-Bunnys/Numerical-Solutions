@@ -8,6 +8,7 @@
 #include <fstream>
 #include <cstdio>
 #include <conio.h>
+#include <chrono>
 #include "../Utils/InputHandler.h"
 #include "../Integrator/Simpson.h"
 #include "../Integrator/Trapezoidal.h"
@@ -43,15 +44,17 @@ public:
 private:
     bool deleteTextFiles;
     bool deleteGraphs;
+    bool showExact;
     IntegrationMethod selectedMethod;
     std::vector<std::string> generatedFiles;
 
     void printWelcomeMessage();
     void handleSingleCalculation();
     void askSettings();
-    void printResults(const std::string &method, double result, double exactValue,
-                      double errorPercentage, double a, double b,
-                      double epsilon, int subintervalCount);
+    void printResults(const std::string& method, double result,
+        double exactValue, double errorPercentage,
+        double a, double b, double epsilon,
+        int subintervalCount, double computeTime);
     void printComparisonTable(double a, double b, const double *tolerances,
                               int numTolerances);
     void printSettings();

@@ -27,6 +27,7 @@ ApplicationHandler::ApplicationHandler()
     this->showGraph = true;
     this->deleteTextFiles = false;
     this->deleteGraphs = false;
+    this->showExact = true;
     this->selectedMethod = IntegrationMethod::BOTH;
 }
 
@@ -74,29 +75,33 @@ void ApplicationHandler::handleSingleCalculation()
     std::getline(std::cin, epsilonInput);
     epsilon = epsilonInput.empty() ? 1e-6 : std::stod(epsilonInput);
 
-    double simpsonResult = simpsonIntegrator.integrate(function, a, b, epsilon);
-    double trapResult = trapezoidalIntegrator.integrate(function, a, b, epsilon);
-
     double exactValue = exactIntegral(a, b);
-
-    int simpsonSubintervalCount = simpsonIntegrator.getSubintervalCount();
-    int trapSubintervalCount = trapezoidalIntegrator.getSubintervalCount();
+    double simpsonResult, trapResult;
+    std::chrono::duration<double, std::milli> simpsonTime, trapTime;
+    int simpsonSubintervalCount = 0;
+    int trapSubintervalCount = 0;
 
     if (selectedMethod == IntegrationMethod::SIMPSON ||
         selectedMethod == IntegrationMethod::BOTH)
     {
+        auto start = std::chrono::high_resolution_clock::now();
         simpsonResult = simpsonIntegrator.integrate(function, a, b, epsilon);
-        this->simpsonError =
-            (std::abs(exactValue - simpsonResult) / std::abs(exactValue)) * 100;
+        auto end = std::chrono::high_resolution_clock::now();
+        simpsonTime = end - start;
+
+        this->simpsonError = (std::abs(exactValue - simpsonResult) / std::abs(exactValue)) * 100;
         simpsonSubintervalCount = simpsonIntegrator.getSubintervalCount();
     }
 
     if (selectedMethod == IntegrationMethod::TRAPEZOIDAL ||
         selectedMethod == IntegrationMethod::BOTH)
     {
+        auto start = std::chrono::high_resolution_clock::now();
         trapResult = trapezoidalIntegrator.integrate(function, a, b, epsilon);
-        this->trapezoidalError =
-            (std::abs(exactValue - trapResult) / std::abs(exactValue)) * 100;
+        auto end = std::chrono::high_resolution_clock::now();
+        trapTime = end - start;
+
+        this->trapezoidalError = (std::abs(exactValue - trapResult) / std::abs(exactValue)) * 100;
         trapSubintervalCount = trapezoidalIntegrator.getSubintervalCount();
     }
 
@@ -106,14 +111,18 @@ void ApplicationHandler::handleSingleCalculation()
         selectedMethod == IntegrationMethod::BOTH)
     {
         printResults("Simpson's Method", simpsonResult, exactValue,
-                     this->simpsonError, a, b, epsilon, simpsonSubintervalCount);
+                     this->simpsonError, a, b, epsilon,
+                     simpsonSubintervalCount,
+                     simpsonTime.count());
     }
 
     if (selectedMethod == IntegrationMethod::TRAPEZOIDAL ||
         selectedMethod == IntegrationMethod::BOTH)
     {
         printResults("Trapezoidal Method", trapResult, exactValue,
-                     this->trapezoidalError, a, b, epsilon, trapSubintervalCount);
+                     this->trapezoidalError, a, b, epsilon,
+                     trapSubintervalCount,
+                     trapTime.count());
     }
 
     if (this->showGraph)
@@ -195,7 +204,7 @@ void ApplicationHandler::printComparisonTable(double a, double b,
 void ApplicationHandler::printResults(const std::string &method, double result,
                                       double exactValue, double errorPercentage,
                                       double a, double b, double epsilon,
-                                      int subintervalCount)
+                                      int subintervalCount, double computeTime)
 {
     std::cout << "Results for " << method << ":\n";
     std::cout << "=====================================================\n";
@@ -207,11 +216,15 @@ void ApplicationHandler::printResults(const std::string &method, double result,
     std::cout << std::setw(20) << "Upper Bound (b):" << std::setw(20) << b << "\n";
     std::cout << std::setw(20) << "Desired Accuracy:" << std::setw(20) << epsilon << "\n";
     std::cout << std::setw(20) << "Subintervals Used:" << std::setw(20) << subintervalCount << "\n";
+    std::cout << std::setw(20) << "Compute Time:" << std::setw(20) << computeTime << " ms\n";
     std::cout << "=====================================================\n";
 
     std::cout << std::fixed << std::setprecision(15);
     std::cout << std::setw(20) << "Integral" << std::setw(10) << result << "\n";
-    std::cout << std::setw(20) << "Exact Value" << std::setw(10) << exactValue << "\n";
-    std::cout << std::setw(20) << "Error (%)" << std::setw(10) << errorPercentage << "%" << "\n";
+    if (showExact)
+    {
+        std::cout << std::setw(20) << "Exact Value" << std::setw(10) << exactValue << "\n";
+        std::cout << std::setw(20) << "Error (%)" << std::setw(10) << errorPercentage << "%" << "\n";
+    }
     std::cout << "=====================================================\n\n";
 }

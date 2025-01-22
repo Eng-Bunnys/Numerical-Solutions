@@ -38,13 +38,13 @@ void ApplicationHandler::displayGraphs()
         selectedMethod == IntegrationMethod::BOTH)
     {
         plot("Error vs Tolerance for Adaptive Simpson's Integration",
-             "f(x) = tan(x)", "simpson");
+             "f(x) = 1 / 1 + x^2", "simpson");
     }
 
     if (selectedMethod == IntegrationMethod::TRAPEZOIDAL ||
         selectedMethod == IntegrationMethod::BOTH)
     {
         plot("Error vs Tolerance for Adaptive Trapezoidal Integration",
-             "f(x) = tan(x)", "trap");
+             "f(x) = 1 / 1 + x^2", "trap");
     }
 }
