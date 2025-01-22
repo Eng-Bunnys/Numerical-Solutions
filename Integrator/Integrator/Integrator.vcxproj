@@ -127,17 +127,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ApplicationHandler.cpp" />
+    <ClCompile Include="Handler\ApplicationHandler.cpp" />
+    <ClCompile Include="Handler\FileHandlers.cpp" />
+    <ClCompile Include="Handler\Plot.cpp" />
+    <ClCompile Include="Handler\Run.cpp" />
+    <ClCompile Include="Handler\Setters_Getters.cpp" />
     <ClCompile Include="Integrator\Trapezoidal.cpp" />
     <ClCompile Include="Utils\InputHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Integrator\Simpson.cpp" />
+    <ClCompile Include="Utils\Menu.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ApplicationHandler.h" />
+    <ClInclude Include="Handler\ApplicationHandler.h" />
     <ClInclude Include="Integrator\Trapezoidal.h" />
     <ClInclude Include="Utils\InputHandler.h" />
     <ClInclude Include="Integrator\Simpson.h" />
+    <ClInclude Include="Utils\Menu.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="plot_graph.py" />

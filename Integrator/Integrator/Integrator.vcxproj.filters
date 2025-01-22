@@ -24,10 +24,25 @@
     <ClCompile Include="Utils\InputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ApplicationHandler.cpp">
+    <ClCompile Include="Handler\ApplicationHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Integrator\Trapezoidal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Handler\Setters_Getters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Handler\FileHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Handler\Plot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Handler\Run.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,10 +53,13 @@
     <ClInclude Include="Utils\InputHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ApplicationHandler.h">
+    <ClInclude Include="Handler\ApplicationHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Integrator\Trapezoidal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
